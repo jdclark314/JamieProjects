@@ -1,0 +1,13 @@
+12/16
+Fixed bug where passenger could be assigned a seat row that was longer than the aisle
+Fixed bug where if passenger was seated in last row, they wouldn't get listed as a seated passenger
+Added beginning of data processing 
+
+12/14
+Cleaned up printing of passenger information
+Reduced code in main function
+SeatedPassengers only seems to be passing me a single passenger and should be multiple, need to troubleshoot
+
+12/13
+Added passenger list and information to the Plane struct
+
