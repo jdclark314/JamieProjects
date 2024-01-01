@@ -10,12 +10,13 @@ type aisleSpot struct {
 	Passenger passenger.Passenger
 }
 
+// Plane represents an airplane with an aisle and passenger-related information.
 type Plane struct {
-	Aisle                 []aisleSpot
-	TimeCount             int                   // tracks length of time boarding has been running
-	PassengerList         []passenger.Passenger // this is essentially the boarding order
-	LeftToBoardPassengers int
-	OnboardPassengers     int
+	Aisle                 []aisleSpot           // Aisle represents the spots in the aisle of the plane.
+	TimeCount             int                   // TimeCount tracks the length of time boarding has been running.
+	PassengerList         []passenger.Passenger // PassengerList represents the list of passengers in the boarding order.
+	LeftToBoardPassengers int                   // LeftToBoardPassengers represents the number of passengers left to board.
+	OnboardPassengers     int                   // OnboardPassengers represents the number of passengers already onboard.
 }
 
 // Adds a passenger to the aisle
