@@ -1,6 +1,9 @@
 package dataprocessing
 
 import (
+	"fmt"
+	"os"
+	"path/filepath"
 	"sim/passenger"
 )
 
@@ -11,7 +14,7 @@ type TotalData struct {
 
 type passengerData struct {
 	PassengerDetails passenger.Passenger
-	passengerMetrics
+	PassengerMetrics passengerMetrics
 }
 
 type totalMetrics struct {
@@ -27,7 +30,7 @@ func (t *TotalData) calcPassengerData(p passenger.Passenger) {
 		PassengerDetails: p,
 		// eventually create a function to handle this as the number of metrics grows
 		// this will support ease of adding metrics and testibility
-		passengerMetrics: passengerMetrics{
+		PassengerMetrics: passengerMetrics{
 			timeToBoard: p.TimeSatDown - p.TimeBoardedPlane,
 		},
 	}
@@ -38,7 +41,7 @@ func (t *TotalData) calcTotalMetrics() {
 	// loop through passenger list and add up metrics
 	sum := 0
 	for _, p := range t.PassengerList {
-		sum += p.timeToBoard
+		sum += p.PassengerMetrics.timeToBoard
 	}
 	t.totalMetrics.avgTimeToBoard = float32(sum) / float32(len(t.PassengerList))
 }
@@ -53,6 +56,33 @@ func DataProcess(passengers []passenger.Passenger) TotalData {
 		data.calcPassengerData(p)
 	}
 	data.calcTotalMetrics()
+	data.outputData()
 
 	return data
+}
+
+// output the data to a csv file
+
+func (t *TotalData) outputData() {
+	// create the file
+	fileName := filepath.Join("data", "data.csv")
+	f, err := os.Create(fileName)
+	if err != nil {
+		fmt.Println(err)
+	}
+	defer f.Close()
+
+	// write the header
+	_, err = f.WriteString("Passenger,AisleTravelSpeed,TimeBoardedPlane,TimeSatDown,Seat,CurrentPOS,TimeSinceLastMove,TimeToBoard\n")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	// write the data
+	for _, p := range t.PassengerList {
+		_, err = f.WriteString(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v\n", p.PassengerDetails, p.PassengerDetails.AisleTravelSpeed, p.PassengerDetails.TimeBoardedPlane, p.PassengerDetails.TimeSatDown, p.PassengerDetails.Seat, p.PassengerDetails.CurrentPOS, p.PassengerDetails.TimeSinceLastMove, p.PassengerMetrics.timeToBoard))
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
 }
