@@ -48,43 +48,34 @@ func ProcessPlaneSim() []passenger.Passenger {
 
 		//loop through ailse and move passengers
 		for a := len(plane.Aisle) - 1; a >= 0; a-- {
-			if a == 0 { //if we're at the first spot, check to see if we need to add a passenger
-				if !plane.Aisle[a].Occupied { //if no one is on the spot
-					if plane.LeftToBoardPassengers > 0 {
-						plane.AddToAisle(0)
-					} else {
-						// fmt.Println("passengers all out of line")
-					}
+			if a == 0 && !plane.Aisle[a].Occupied {
+				// Check if the first spot is empty and need to add a passenger
+				if plane.LeftToBoardPassengers > 0 {
+					plane.AddToAisle(0)
 				}
-			}
-			//check if passenger is there
-			if plane.Aisle[a].Occupied {
-				//if yes move them
-				// check to see if enough time has elapsed to move
+			} else if plane.Aisle[a].Occupied {
+				// Check if there is a passenger in the current spot
 				if plane.Aisle[a].Passenger.TimeSinceLastMove > plane.Aisle[a].Passenger.AisleTravelSpeed {
-					// check to see if passenger in aisle that has their seat
+					// Check if enough time has elapsed to move the passenger
 					if plane.Aisle[a].Passenger.Seat == strconv.Itoa(a) {
+						// Check if the passenger has reached their seat
 						plane.Aisle[a].Passenger.TimeSatDown = plane.TimeCount
 						seatedPassengers = append(seatedPassengers, plane.Aisle[a].Passenger)
-						plane.Aisle[a].Occupied = !plane.Aisle[a].Occupied
+						plane.Aisle[a].Occupied = false
 						plane.Aisle[a].Passenger = passenger.Passenger{}
-
 					} else if !plane.Aisle[a+1].Occupied {
-						//check if next spot is clear
-						//move the passenger forward
-						plane.Aisle[a+1].Occupied = !plane.Aisle[a+1].Occupied
+						// Check if the next spot is clear to move the passenger forward
+						plane.Aisle[a+1].Occupied = true
 						plane.Aisle[a+1].Passenger = plane.Aisle[a].Passenger
-						plane.Aisle[a].Occupied = !plane.Aisle[a].Occupied
+						plane.Aisle[a].Occupied = false
 						plane.Aisle[a].Passenger = passenger.Passenger{}
-						// set time since last move to 0 since they moved
 						plane.Aisle[a+1].Passenger.TimeSinceLastMove = 0
-					} else { //spot not clear so can't move
-						fmt.Println("the next spot is taken for: ", a)
-						// didn't move so increment
+					} else {
+						// The next spot is taken, so the passenger can't move
+						fmt.Println("The next spot is taken for:", a)
 					}
 				}
-				// increment time for this passenger
-				plane.Aisle[a].Passenger.TimeSinceLastMove += 1
+				plane.Aisle[a].Passenger.TimeSinceLastMove++
 			}
 		}
 
