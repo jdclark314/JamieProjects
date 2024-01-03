@@ -56,14 +56,14 @@ func DataProcess(passengers []passenger.Passenger) TotalData {
 		data.calcPassengerData(p)
 	}
 	data.calcTotalMetrics()
-	data.outputData()
+	data.outputIndividualData()
 
 	return data
 }
 
 // output the data to a csv file
-
-func (t *TotalData) outputData() {
+// writing data to  a file isn't part of the data process, this should be in its own package
+func (t *TotalData) outputIndividualData() {
 	// create the file
 	fileName := filepath.Join("data", "data.csv")
 	f, err := os.Create(fileName)
@@ -73,14 +73,14 @@ func (t *TotalData) outputData() {
 	defer f.Close()
 
 	// write the header
-	_, err = f.WriteString("Passenger,AisleTravelSpeed,TimeBoardedPlane,TimeSatDown,Seat,CurrentPOS,TimeSinceLastMove,TimeToBoard\n")
+	_, err = f.WriteString("PassengerId,AisleTravelSpeed,TimeBoardedPlane,TimeSatDown,Seat,CurrentPOS,TimeSinceLastMove,TimeToBoard\n")
 	if err != nil {
 		fmt.Println(err)
 	}
 
 	// write the data
 	for _, p := range t.PassengerList {
-		_, err = f.WriteString(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v\n", p.PassengerDetails, p.PassengerDetails.AisleTravelSpeed, p.PassengerDetails.TimeBoardedPlane, p.PassengerDetails.TimeSatDown, p.PassengerDetails.Seat, p.PassengerDetails.CurrentPOS, p.PassengerDetails.TimeSinceLastMove, p.PassengerMetrics.timeToBoard))
+		_, err = f.WriteString(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v\n", p.PassengerDetails.PassengerId, p.PassengerDetails.AisleTravelSpeed, p.PassengerDetails.TimeBoardedPlane, p.PassengerDetails.TimeSatDown, p.PassengerDetails.Seat, p.PassengerDetails.CurrentPOS, p.PassengerDetails.TimeSinceLastMove, p.PassengerMetrics.timeToBoard))
 		if err != nil {
 			fmt.Println(err)
 		}

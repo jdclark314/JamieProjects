@@ -12,6 +12,7 @@ type Passenger struct {
 	Seat              string
 	CurrentPOS        int
 	TimeSinceLastMove int
+	PassengerId       int
 }
 
 // determines the AisleTravelSpeed of each passenger
@@ -36,7 +37,7 @@ func CreatePassengers(passengerCount int, ailseCount int) []Passenger {
 	passengers := []Passenger{}
 	for i := 0; i < passengerCount; i++ {
 		// need a better way to produce random passenger information
-		passengers = append(passengers, Passenger{makeRandomWalkingSpeed(), 0, 0, assignRandomSeat(ailseCount), 0, 0})
+		passengers = append(passengers, Passenger{makeRandomWalkingSpeed(), 0, 0, assignRandomSeat(ailseCount), 0, 0, i})
 	}
 	return passengers
 }

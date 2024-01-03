@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-var PASSENGER_COUNT = 2
+var PASSENGER_COUNT = 20
 var AISLE_LENGTH = 5
 
 /*
