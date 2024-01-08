@@ -1,11 +1,36 @@
 package plane
 
-import "testing"
+import (
+	"sim/passenger"
+	"testing"
+)
 
 // add a test for the isAisleEmpty function
 func TestAddToAisle(t *testing.T) {
+	// create list of 2 passengers
+	passengers := []passenger.Passenger{
+		{
+			AisleTravelSpeed:  0,
+			TimeBoardedPlane:  0,
+			TimeSatDown:       16,
+			Seat:              "",
+			CurrentPOS:        0,
+			TimeSinceLastMove: 0,
+			PassengerId:       0,
+		},
+		{
+			AisleTravelSpeed:  0,
+			TimeBoardedPlane:  0,
+			TimeSatDown:       18,
+			Seat:              "",
+			CurrentPOS:        0,
+			TimeSinceLastMove: 0,
+			PassengerId:       1,
+		},
+	}
+
 	// create a plane
-	p := NewPlane(10, 10)
+	p := NewPlane(10, 10, passengers)
 	// add a passenger to the aisle
 	p.AddToAisle(0)
 	// check that the passenger was added
@@ -31,8 +56,26 @@ func TestAddToAisle(t *testing.T) {
 }
 
 func TestIsAisleEmpty(t *testing.T) {
+	passengers := []passenger.Passenger{
+		{
+			AisleTravelSpeed:  0,
+			TimeBoardedPlane:  10,
+			TimeSatDown:       16,
+			Seat:              "",
+			CurrentPOS:        0,
+			TimeSinceLastMove: 0,
+		},
+		{
+			AisleTravelSpeed:  0,
+			TimeBoardedPlane:  12,
+			TimeSatDown:       18,
+			Seat:              "",
+			CurrentPOS:        0,
+			TimeSinceLastMove: 0,
+		},
+	}
 	// create a plane
-	p := NewPlane(10, 10)
+	p := NewPlane(10, 10, passengers)
 	// check that the aisle is empty
 	if !p.IsAisleEmpty() {
 		t.Error("Aisle is not empty")

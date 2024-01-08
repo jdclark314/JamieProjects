@@ -41,3 +41,33 @@ func CreatePassengers(passengerCount int, ailseCount int) []Passenger {
 	}
 	return passengers
 }
+
+// sort the passenger list by their seat number from lowest to highest
+// this will allow the passengers to be added to the aisle in order
+func SortPassengers(passengers []Passenger) []Passenger {
+	for i := 0; i < len(passengers); i++ {
+		for j := 0; j < len(passengers)-1; j++ {
+			if passengers[j].Seat > passengers[j+1].Seat {
+				temp := passengers[j]
+				passengers[j] = passengers[j+1]
+				passengers[j+1] = temp
+			}
+		}
+	}
+	return passengers
+}
+
+// sort passenger list by their seat number from highest to lowest
+// this will allow the passengers to be added to the aisle in order
+func SortPassengersReverse(passengers []Passenger) []Passenger {
+	for i := 0; i < len(passengers); i++ {
+		for j := 0; j < len(passengers)-1; j++ {
+			if passengers[j].Seat < passengers[j+1].Seat {
+				temp := passengers[j]
+				passengers[j] = passengers[j+1]
+				passengers[j+1] = temp
+			}
+		}
+	}
+	return passengers
+}

@@ -2,14 +2,17 @@ package main
 
 import (
 	"fmt"
-	"sim/dataprocessing"
 	"sim/passenger"
 	"sim/plane"
 	"strconv"
+	"time"
 )
 
-var PASSENGER_COUNT = 20
-var AISLE_LENGTH = 5
+var PASSENGER_COUNT = 500
+var AISLE_LENGTH = 70
+var SIMULATION_RUNS = 100
+
+//modify simulation runs doesn't appear to effect the average time saved
 
 /*
 
@@ -30,8 +33,8 @@ Next Steps: (no order)
 // Runs the decision for getting all passengers on plane
 // Returns the passengerList slice for processing of data
 // Will most likely change that return value as improvements are made
-func ProcessPlaneSim() []passenger.Passenger {
-	plane := plane.NewPlane(AISLE_LENGTH, PASSENGER_COUNT)
+func ProcessPlaneSim(p []passenger.Passenger) ([]passenger.Passenger, int) {
+	plane := plane.NewPlane(AISLE_LENGTH, PASSENGER_COUNT, p)
 
 	seatedPassengers := []passenger.Passenger{}
 
@@ -41,7 +44,7 @@ func ProcessPlaneSim() []passenger.Passenger {
 				// 0 to add to first row
 				plane.AddToAisle(0)
 			} else {
-				fmt.Println("passengers all out of line and aisle empty")
+				// fmt.Println("passengers all out of line and aisle empty")
 				break
 			}
 		}
@@ -72,7 +75,7 @@ func ProcessPlaneSim() []passenger.Passenger {
 						plane.Aisle[a+1].Passenger.TimeSinceLastMove = 0
 					} else {
 						// The next spot is taken, so the passenger can't move
-						fmt.Println("The next spot is taken for:", a)
+						// fmt.Println("The next spot is taken for:", a)
 					}
 				}
 				plane.Aisle[a].Passenger.TimeSinceLastMove++
@@ -90,12 +93,64 @@ func ProcessPlaneSim() []passenger.Passenger {
 		fmt.Println("ERROR: Not all passengers have been seated")
 	}
 
-	fmt.Println("All passengers boarded with time: ", plane.TimeCount)
-	return seatedPassengers
+	// fmt.Println("All passengers boarded with time: ", plane.TimeCount)
+	return seatedPassengers, plane.TimeCount
 }
 
 func main() {
-	passengerList := ProcessPlaneSim()
-	fmt.Println("This is the passenger list we received in main: ", passengerList)
-	dataprocessing.DataProcess(passengerList)
+	// // create a list of passengers
+	// passengers := passenger.CreatePassengers(PASSENGER_COUNT, AISLE_LENGTH)
+	// fmt.Println("random order of passengers: ")
+	// passengerList, time := ProcessPlaneSim(passengers)
+	// // dataprocessing.DataProcess(passengerList)
+	// sortedPassengers := passenger.SortPassengers(passengerList)
+	// _, unsortedTime := ProcessPlaneSim(sortedPassengers)
+	// time hack to run 100 simulations
+	startTime := time.Now()
+	simRunForward()
+	// track how long it took to run the simulation in seconds
+	elapsedTime := time.Since(startTime).Seconds()
+	fmt.Println("elapsed time: ", elapsedTime)
+
+	startTime = time.Now()
+	simRunReverse()
+	// track how long it took to run the simulation in seconds
+	elapsedTime = time.Since(startTime).Seconds()
+	fmt.Println("elapsed time: ", elapsedTime)
+}
+
+// run 100 simulations and calculate average time saved
+func simRunForward() {
+	timeDifference := 0
+	for i := 0; i < SIMULATION_RUNS; i++ {
+		// create a list of passengers
+		passengers := passenger.CreatePassengers(PASSENGER_COUNT, AISLE_LENGTH)
+		// fmt.Println("random order of passengers: ")
+		passengerList, time := ProcessPlaneSim(passengers)
+		// dataprocessing.DataProcess(passengerList)
+		sortedPassengers := passenger.SortPassengers(passengerList)
+		_, unsortedTime := ProcessPlaneSim(sortedPassengers)
+		timeDifference += time - unsortedTime
+	}
+	fmt.Println("Total time saved: ", timeDifference)
+	averageTimeSaved := float32(timeDifference) / float32(SIMULATION_RUNS)
+	fmt.Println("Average time saved forward: ", averageTimeSaved)
+}
+
+// run simulations but using sortPassengersReverse
+func simRunReverse() {
+	timeDifference := 0
+	for i := 0; i < SIMULATION_RUNS; i++ {
+		// create a list of passengers
+		passengers := passenger.CreatePassengers(PASSENGER_COUNT, AISLE_LENGTH)
+		// fmt.Println("random order of passengers: ")
+		passengerList, time := ProcessPlaneSim(passengers)
+		// dataprocessing.DataProcess(passengerList)
+		sortedPassengers := passenger.SortPassengersReverse(passengerList)
+		_, unsortedTime := ProcessPlaneSim(sortedPassengers)
+		timeDifference += time - unsortedTime
+	}
+	fmt.Println("Total time saved: ", timeDifference)
+	averageTimeSaved := float32(timeDifference) / float32(SIMULATION_RUNS)
+	fmt.Println("Average time saved reverse: ", averageTimeSaved)
 }

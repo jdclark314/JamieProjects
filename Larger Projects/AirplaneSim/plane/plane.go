@@ -1,7 +1,6 @@
 package plane
 
 import (
-	"fmt"
 	"sim/passenger"
 )
 
@@ -29,7 +28,6 @@ func (a *Plane) AddToAisle(rowNum int) {
 	a.Aisle[rowNum].Passenger.TimeBoardedPlane = a.TimeCount
 	a.LeftToBoardPassengers--
 	a.OnboardPassengers++
-	fmt.Println("Added a new passenger to the Aisle")
 }
 
 func (a *Plane) IsAisleEmpty() bool {
@@ -41,8 +39,8 @@ func (a *Plane) IsAisleEmpty() bool {
 	return true
 }
 
-func NewPlane(aisleLength, passengerCount int) Plane {
-	p := passenger.CreatePassengers(passengerCount, aisleLength)
+func NewPlane(aisleLength, passengerCount int, p []passenger.Passenger) Plane {
+	// p := passenger.CreatePassengers(passengerCount, aisleLength)
 	return Plane{
 		Aisle:                 make([]aisleSpot, aisleLength),
 		TimeCount:             0,
