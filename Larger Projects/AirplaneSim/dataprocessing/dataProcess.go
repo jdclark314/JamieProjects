@@ -80,7 +80,7 @@ func (t *TotalData) outputIndividualData() {
 
 	// write the data
 	for _, p := range t.PassengerList {
-		_, err = f.WriteString(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v\n", p.PassengerDetails.PassengerId, p.PassengerDetails.AisleTravelSpeed, p.PassengerDetails.TimeBoardedPlane, p.PassengerDetails.TimeSatDown, p.PassengerDetails.Seat, p.PassengerDetails.CurrentPOS, p.PassengerDetails.TimeSinceLastMove, p.PassengerMetrics.timeToBoard))
+		_, err = f.WriteString(fmt.Sprintf("%v,%v,%v,%v,%v,%v,%v,%v\n", p.PassengerDetails.PassengerId, p.PassengerDetails.AisleTravelSpeed, p.PassengerDetails.TimeBoardedPlane, p.PassengerDetails.TimeSatDown, p.PassengerDetails.SeatRow, p.PassengerDetails.CurrentPOS, p.PassengerDetails.TimeSinceLastMove, p.PassengerMetrics.timeToBoard))
 		if err != nil {
 			fmt.Println(err)
 		}

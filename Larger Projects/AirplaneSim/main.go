@@ -60,7 +60,72 @@ func ProcessPlaneSim(p []passenger.Passenger) ([]passenger.Passenger, int) {
 				// Check if there is a passenger in the current spot
 				if plane.Aisle[a].Passenger.TimeSinceLastMove > plane.Aisle[a].Passenger.AisleTravelSpeed {
 					// Check if enough time has elapsed to move the passenger
-					if plane.Aisle[a].Passenger.Seat == strconv.Itoa(a) {
+					if plane.Aisle[a].Passenger.SeatRow == strconv.Itoa(a) {
+						// Check if the passenger has reached their seat
+						plane.Aisle[a].Passenger.TimeSatDown = plane.TimeCount
+						seatedPassengers = append(seatedPassengers, plane.Aisle[a].Passenger)
+						plane.Aisle[a].Occupied = false
+						plane.Aisle[a].Passenger = passenger.Passenger{}
+					} else if !plane.Aisle[a+1].Occupied {
+						// Check if the next spot is clear to move the passenger forward
+						plane.Aisle[a+1].Occupied = true
+						plane.Aisle[a+1].Passenger = plane.Aisle[a].Passenger
+						plane.Aisle[a].Occupied = false
+						plane.Aisle[a].Passenger = passenger.Passenger{}
+						plane.Aisle[a+1].Passenger.TimeSinceLastMove = 0
+					} else {
+						// The next spot is taken, so the passenger can't move
+						// fmt.Println("The next spot is taken for:", a)
+					}
+				}
+				plane.Aisle[a].Passenger.TimeSinceLastMove++
+			}
+		}
+
+		//this is the safety catch so I don't infinite loop
+		if plane.TimeCount > 1000*PASSENGER_COUNT { //1000 is arbitrary number selected, just want to make sure it doesn't go too far
+			fmt.Println("Got to 100 to break")
+			break
+		}
+	}
+
+	if len(seatedPassengers) != PASSENGER_COUNT {
+		fmt.Println("ERROR: Not all passengers have been seated")
+	}
+
+	// fmt.Println("All passengers boarded with time: ", plane.TimeCount)
+	return seatedPassengers, plane.TimeCount
+}
+
+// Being built to support passengers having a seat row and letter
+func InProgressPlaneSim(p []passenger.Passenger) ([]passenger.Passenger, int) {
+	plane := plane.NewPlane(AISLE_LENGTH, PASSENGER_COUNT, p)
+
+	seatedPassengers := []passenger.Passenger{}
+
+	for ; ; plane.TimeCount++ {
+		if plane.IsAisleEmpty() {
+			if plane.LeftToBoardPassengers > 0 {
+				// 0 to add to first row
+				plane.AddToAisle(0)
+			} else {
+				// fmt.Println("passengers all out of line and aisle empty")
+				break
+			}
+		}
+
+		//loop through ailse and move passengers
+		for a := len(plane.Aisle) - 1; a >= 0; a-- {
+			if a == 0 && !plane.Aisle[a].Occupied {
+				// Check if the first spot is empty and need to add a passenger
+				if plane.LeftToBoardPassengers > 0 {
+					plane.AddToAisle(0)
+				}
+			} else if plane.Aisle[a].Occupied {
+				// Check if there is a passenger in the current spot
+				if plane.Aisle[a].Passenger.TimeSinceLastMove > plane.Aisle[a].Passenger.AisleTravelSpeed {
+					// Check if enough time has elapsed to move the passenger
+					if plane.Aisle[a].Passenger.SeatRow == strconv.Itoa(a) {
 						// Check if the passenger has reached their seat
 						plane.Aisle[a].Passenger.TimeSatDown = plane.TimeCount
 						seatedPassengers = append(seatedPassengers, plane.Aisle[a].Passenger)
@@ -98,20 +163,12 @@ func ProcessPlaneSim(p []passenger.Passenger) ([]passenger.Passenger, int) {
 }
 
 func main() {
-	// // create a list of passengers
-	// passengers := passenger.CreatePassengers(PASSENGER_COUNT, AISLE_LENGTH)
-	// fmt.Println("random order of passengers: ")
-	// passengerList, time := ProcessPlaneSim(passengers)
-	// // dataprocessing.DataProcess(passengerList)
-	// sortedPassengers := passenger.SortPassengers(passengerList)
-	// _, unsortedTime := ProcessPlaneSim(sortedPassengers)
 	// time hack to run 100 simulations
 	startTime := time.Now()
 	simRunForward()
 	// track how long it took to run the simulation in seconds
 	elapsedTime := time.Since(startTime).Seconds()
 	fmt.Println("elapsed time: ", elapsedTime)
-
 	startTime = time.Now()
 	simRunReverse()
 	// track how long it took to run the simulation in seconds
